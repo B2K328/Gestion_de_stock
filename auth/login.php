@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         if ($user) {
             setFlashMessage('success', 'Bienvenue, ' . $user['name'] . ' !');
-            redirectTo('/index.php');
+            redirectTo('http://localhost/Gestion_de_stock/index.php');
         } else {
             $error = 'Email ou mot de passe incorrect.';
         }
