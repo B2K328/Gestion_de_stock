@@ -1,0 +1,174 @@
+[
+    {
+        "id": "fac-001",
+        "numero": "FAC-2026-0001",
+        "date": "2026-04-15 10:30:00",
+        "client": {
+            "nom": "Entreprise BTP Sahara",
+            "ice": "001234567900089"
+        },
+        "vendeur_id": "usr-002",
+        "articles": [
+            {
+                "produit_id": "prod-001",
+                "code": "P001",
+                "nom": "Ciment CPJ 42.5",
+                "quantite": 100,
+                "prix_unitaire": 75,
+                "total": 7500
+            },
+            {
+                "produit_id": "prod-004",
+                "code": "P004",
+                "nom": "Fer à béton 12mm",
+                "quantite": 50,
+                "prix_unitaire": 120,
+                "total": 6000
+            }
+        ],
+        "sous_total": 13500,
+        "tva": 20,
+        "total_tva": 2700,
+        "total": 16200,
+        "statut": "payee",
+        "created_at": "2026-04-15 10:30:00"
+    },
+    {
+        "id": "fac-002",
+        "numero": "FAC-2026-0002",
+        "date": "2026-04-20 14:15:00",
+        "client": {
+            "nom": "Construction Moderne",
+            "ice": "001234567900123"
+        },
+        "vendeur_id": "usr-002",
+        "articles": [
+            {
+                "produit_id": "prod-002",
+                "code": "P002",
+                "nom": "Sable fin",
+                "quantite": 30,
+                "prix_unitaire": 180,
+                "total": 5400
+            },
+            {
+                "produit_id": "prod-003",
+                "code": "P003",
+                "nom": "Gravier 5\/15",
+                "quantite": 25,
+                "prix_unitaire": 220,
+                "total": 5500
+            }
+        ],
+        "sous_total": 10900,
+        "tva": 20,
+        "total_tva": 2180,
+        "total": 13080,
+        "statut": "en_attente",
+        "created_at": "2026-04-20 14:15:00"
+    },
+    {
+        "id": "fac-003",
+        "numero": "FAC-2026-0003",
+        "date": "2026-04-25 09:00:00",
+        "client": {
+            "nom": "BTP Atlas",
+            "ice": "001234567900456"
+        },
+        "vendeur_id": "usr-002",
+        "articles": [
+            {
+                "produit_id": "prod-005",
+                "code": "P005",
+                "nom": "Briques creuses",
+                "quantite": 2000,
+                "prix_unitaire": 4,
+                "total": 8000
+            }
+        ],
+        "sous_total": 8000,
+        "tva": 20,
+        "total_tva": 1600,
+        "total": 9600,
+        "statut": "payee",
+        "created_at": "2026-04-25 09:00:00"
+    },
+    {
+        "id": "FAC-20260429-829",
+        "date": "2026-04-29",
+        "heure": "17:01:48",
+        "caissier": "Admin Système",
+        "articles": [
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            },
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            }
+        ],
+        "total_ht": 360,
+        "tva": 64.8,
+        "total_ttc": 424.8,
+        "created_at": "2026-04-29 17:01:48"
+    },
+    {
+        "id": "FAC-20260429-943",
+        "date": "2026-04-29",
+        "heure": "17:04:05",
+        "caissier": "Admin Système",
+        "articles": [
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            },
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            }
+        ],
+        "total_ht": 360,
+        "tva": 64.8,
+        "total_ttc": 424.8,
+        "created_at": "2026-04-29 17:04:05"
+    },
+    {
+        "id": "FAC-20260429-172",
+        "date": "2026-04-29",
+        "heure": "17:06:28",
+        "caissier": "Admin Système",
+        "articles": [
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            },
+            {
+                "code": "P002",
+                "nom": "Sable fin",
+                "prix_unitaire_ht": 180,
+                "quantite": 1,
+                "sous_total_ht": 180
+            }
+        ],
+        "total_ht": 360,
+        "tva": 64.8,
+        "total_ttc": 424.8,
+        "created_at": "2026-04-29 17:06:28"
+    }
+]
