@@ -50,7 +50,7 @@ function formatDate(?string $date = null): string {
 
 /**
  * Sanitiser une entrée utilisateur
- * @param mixed $input
+ * @param mixed $input 
  * @return mixed
  */
 function sanitizeInput($input) {

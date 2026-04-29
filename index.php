@@ -58,7 +58,7 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
             <a href="/modules/admin/gestion-compte.php">Comptes</a>
             <?php endif; ?>
             <span>| <?= $_SESSION['user_name'] ?? '' ?> (<?= getUserRole() ?>)</span>
-            <a href="/auth/logout.php">Déconnexion</a>
+            <a href="auth/logout.php">Déconnexion</a>
         </div>
     </nav>
     <div class="container">
@@ -68,7 +68,7 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
         <div class="stats">
             <div class="stat-card">
                 <h3>📊 Total Ventes</h3>
-                <div class="value">38 880 DH</div>
+                <div class="value">38 880 FC</div>
             </div>
             <div class="stat-card">
                 <h3>🧾 Factures</h3>
@@ -101,21 +101,21 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
                         <td>FAC-2026-0003</td>
                         <td>BTP Atlas</td>
                         <td>25/04/2026</td>
-                        <td>9 600 DH</td>
+                        <td>9 600 FC</td>
                         <td><span style="color: #27ae60;">Payée</span></td>
                     </tr>
                     <tr>
                         <td>FAC-2026-0002</td>
                         <td>Construction Moderne</td>
                         <td>20/04/2026</td>
-                        <td>13 080 DH</td>
+                        <td>13 080 FC</td>
                         <td><span style="color: #f39c12;">En attente</span></td>
                     </tr>
                     <tr>
                         <td>FAC-2026-0001</td>
                         <td>Entreprise BTP Sahara</td>
                         <td>15/04/2026</td>
-                        <td>16 200 DH</td>
+                        <td>16 200 FC</td>
                         <td><span style="color: #27ae60;">Payée</span></td>
                     </tr>
                 </tbody>

@@ -12,4 +12,4 @@ require_once __DIR__ . '/../includes/fonctions-Auth.php';
 logoutUser();
 
 setFlashMessage('success', 'Vous avez été déconnecté avec succès.');
-redirectTo('/auth/login.php');
+redirectTo('login.php');
