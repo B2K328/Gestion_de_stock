@@ -2,7 +2,24 @@
 /**
  * En-tête commun
  * Gestion de Stock - Transco
+ * Étudiant 2: Front-End & Hardware
  */
+
+// Vérifier les fonctions d'authentification
+if (!function_exists('isLoggedIn')) {
+    function isLoggedIn() {
+        return isset($_SESSION['user_id']);
+    }
+    
+    function isAdmin() {
+        return in_array($_SESSION['role'] ?? '', ['admin', 'manager', 'super_admin']);
+    }
+    
+    function getUserRole() {
+        $roles = ['caissier' => 'Caissier', 'admin' => 'Admin', 'manager' => 'Manager', 'super_admin' => 'Super Admin'];
+        return $roles[$_SESSION['role'] ?? 'caissier'] ?? 'Utilisateur';
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -10,81 +27,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $pageTitle ?? 'Gestion de Stock' ?></title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f6fa;
-            min-height: 100vh;
-        }
-        .navbar {
-            background: #2c3e50;
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .navbar-brand { font-size: 1.5rem; font-weight: bold; }
-        .navbar-menu { display: flex; gap: 1.5rem; align-items: center; }
-        .navbar-menu a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: background 0.3s;
-        }
-        .navbar-menu a:hover { background: #34495e; }
-        .user-info { color: #bdc3c7; font-size: 0.9rem; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-        .card {
-            background: white;
-            border-radius: 8px;
-            padding: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-primary { background: #3498db; color: white; }
-        .btn-success { background: #27ae60; color: white; }
-        .btn-danger { background: #e74c3c; color: white; }
-        .btn:hover { opacity: 0.9; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid #ecf0f1; }
-        th { background: #f8f9fa; font-weight: 600; }
-        .alert { padding: 1rem; border-radius: 5px; margin-bottom: 1rem; }
-        .alert-success { background: #d4edda; color: #155724; }
-        .alert-error { background: #f8d7da; color: #721c24; }
-        .alert-warning { background: #fff3cd; color: #856404; }
-    </style>
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
-<body>
+<body style="display: flex; flex-direction: column; height: 100vh;">
     <nav class="navbar">
         <div class="navbar-brand">📦 Gestion de Stock</div>
         <?php if (isLoggedIn()): ?>
         <div class="navbar-menu">
-            <a href="/index.php">Accueil</a>
+            <a href="/">Accueil</a>
             <a href="/modules/produits/liste.php">Produits</a>
-            <a href="/modules/facturation/nouvelle-facture.php">Nouvelle Facture</a>
+            <a href="/modules/facturation/nouvelle-facture.php">Factures</a>
             <?php if (isAdmin()): ?>
-            <a href="/modules/admin/gestion-compte.php">Comptes</a>
+            <a href="/modules/produits/enregistrer.php">Enregistrer Produit</a>
             <?php endif; ?>
-            <span class="user-info">| <?= $_SESSION['user_name'] ?? '' ?> (<?= getUserRole() ?>)</span>
-            <a href="/auth/logout.php">Déconnexion</a>
+            <?php if ($_SESSION['role'] === 'super_admin'): ?>
+            <a href="/modules/admin/gestion-compte.php">Comptes</a>
+            <a href="/rapports/rapport-journalier.php">Rapports</a>
+            <?php endif; ?>
+        </div>
+        <div class="user-info">
+            <span>👤 <?= htmlspecialchars($_SESSION['user_name'] ?? 'Utilisateur') ?> (<?= getUserRole() ?>)</span>
+            <a href="/auth/logout.php" style="margin-left: 1rem;">Déconnexion</a>
         </div>
         <?php endif; ?>
     </nav>
-    <div class="container">
+    <div class="container" style="flex: 1;">
         <?php if (isset($_SESSION['flash'])): ?>
             <?php foreach ($_SESSION['flash'] as $type => $message): ?>
-                <div class="alert alert-<?= $type ?>"><?= htmlspecialchars($message) ?></div>
+                <div class="alert alert-<?= $type ?>">
+                    <?= htmlspecialchars($message) ?>
+                </div>
             <?php endforeach; ?>
             <?php unset($_SESSION['flash']); ?>
         <?php endif; ?>
