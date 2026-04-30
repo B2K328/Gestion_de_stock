@@ -30,5 +30,9 @@ header('Content-Type: text/html; charset=utf-8');
 // Mode debug (à désactiver en production)
 define('DEBUG_MODE', true);
 
+// Configuration fiscale
+define('TVA_RATE', 0.18);  // Taux TVA : 18%
+define('CURRENCY', 'CDF'); // Devise : Franc Congolais
+
 // Messages d'erreur/succès
 $messages = [];

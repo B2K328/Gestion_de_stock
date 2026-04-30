@@ -72,6 +72,7 @@ function loginUser(array $user): void {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['user_email'] = $user['email'];
     $_SESSION['user_name'] = $user['nom'] . ' ' . ($user['prenom'] ?? '');
+    $_SESSION['role'] = $user['role'] ?? 'utilisateur';
     $_SESSION['user_role'] = $user['role'] ?? 'utilisateur';
     $_SESSION['login_time'] = time();
     

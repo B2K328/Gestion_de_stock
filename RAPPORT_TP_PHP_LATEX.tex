@@ -1,0 +1,836 @@
+\documentclass[12pt,a4paper]{report}
+% UTF-8 est supporté nativement par lualatex
+\usepackage[french]{babel}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{xfrac}
+
+% Configuration des couleurs pour les listings
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{codepurple},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codegreen},
+    basicstyle=\ttfamily\small,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=PHP
+}
+\lstset{style=mystyle}
+
+% En-tête et pied de page
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Gestion de Stock - Facturation}
+\lhead{TP Programmation Web}
+\cfoot{\thepage}
+
+\title{
+    \textbf{RAPPORT DU TRAVAIL} \\
+    \Large SYSTÈME DE GESTION DE STOCK AVEC FACTURATION \\
+    \vspace{0.5cm}
+    \normalsize Travail Pratique - Programmation Web PHP Procédurale \\
+    \vspace{0.2cm}
+    \small Université Protestante au Congo - L2 FASI 2025-2026
+}
+\author{Bakenda Dan \\
+Ngunz Andy \\
+Bidiki Enock}
+\date{avril 2026}
+
+\begin{document}
+
+% Page de garde
+\maketitle
+\pagebreak
+
+% Table des matières
+\tableofcontents
+\pagebreak
+
+% ============================================
+\chapter{Introduction}
+% ============================================
+
+\section{Contexte du Projet}
+
+Ce travail pratique s'inscrit dans le cadre du cursus de deuxième année de la Faculté des Sciences Informatiques de l'Université Protestante au Congo. Il porte sur le développement d'un \textbf{système de gestion de stock avec facturation automatisée}, destiné à moderniser les processus de vente d'un petit commerce ou supermarché.
+
+Le système répond à un besoin réel : automatiser la saisie des articles via lecture de codes-barres, générer des factures détaillées avec calculs fiscaux, et maintenir un suivi des stocks en temps réel.
+
+\section{Rôles et responsabilités}
+
+Les tâches ont été réparties entre les trois participants du projet comme suit :
+
+\begin{itemize}
+    \item \textbf{Bakenda Dan} : Authentification et gestion des comptes, utilitaires communs, fonctions CRUD pour les produits, gestion des sessions et sécurité de base.
+    \item \textbf{Ngunz Andy} : Front-end et intégration hardware — implémentation du scanner (\texttt{assets/js/scanner.js}), interface d'enregistrement des produits (\texttt{modules/produits/enregistrer.php}), et interface de facturation interactive (\texttt{modules/facturation/nouvelle-facture.php}).
+    \item \textbf{Bidiki Enock} : Coordination de la logique métier et de la documentation — calculs de TVA et TTC, génération d'identifiants de facture, décrémentation automatique du stock, génération de rapports journaliers/mensuels et rédaction du rapport LaTeX.
+\end{itemize}
+
+\section{Contributions détaillées}
+
+Ce projet a été réalisé collectivement. La répartition des tâches ci-dessous a été adoptée pour clarifier les apports de chaque membre du groupe.
+
+\begin{itemize}
+    \item \textbf{Bakenda Dan} : Conception et implémentation des modules d'authentification (login, logout, gestion des sessions), gestion des comptes administrateurs, implémentation des fonctions utilitaires partagées (fichiers dans \texttt{includes/}), et participation aux fonctions CRUD pour les produits.
+    \item \textbf{Ngunz Andy} : Développement de l'interface utilisateur et intégration du scanner de codes-barres (\texttt{assets/js/scanner.js}), pages d'enregistrement et de liste des produits (\texttt{modules/produits/enregistrer.php}, \texttt{liste.php}), et implémentation de l'interface de facturation interactive (\texttt{modules/facturation/nouvelle-facture.php}).
+    \item \textbf{Bidiki Enock} : Logique de facturation et calculs financiers (TVA/TTC), génération d'identifiants uniques pour les factures, gestion des rapports journaliers/mensuels, coordination de la documentation et préparation du rapport LaTeX final.
+\end{itemize}
+
+Cette section atteste que le rapport et le code sont le fruit d'un travail d'équipe, chaque membre ayant pris en charge des responsabilités spécifiques tout en participant aux revues et tests croisés.
+
+\section{Contraintes Techniques}
+
+Le projet opère sous les contraintes suivantes :
+
+\begin{enumerate}
+    \item \textbf{Pas de base de données} : persistance exclusive par fichiers JSON
+    \item \textbf{Paradigme procédural strict} en PHP (pas d'orienté objet)
+    \item \textbf{Taux TVA standardisé} à 18\% (Franc Congolais)
+    \item \textbf{Architecture modulaire} avec séparation des responsabilités
+    \item \textbf{Contrôle d'accès basé sur les rôles} (RBAC)
+\end{enumerate}
+
+\pagebreak
+
+% ============================================
+\chapter{Architecture et Structures de Données}
+% ============================================
+
+\section{Arborescence du Projet}
+
+L'application suit une structure d'organisation claire et maintenable :
+
+\begin{verbatim}
+facturation/
+├── index.php                      (Point d'entrée)
+├── config/
+│   └── config.php                 (Configuration globale)
+├── auth/
+│   ├── login.php
+│   ├── logout.php
+│   └── session.php
+├── modules/
+│   ├── produits/
+│   │   ├── enregistrer.php
+│   │   ├── lire.php
+│   │   └── liste.php
+│   ├── facturation/
+│   │   ├── nouvelle-facture.php
+│   │   ├── calcul.php            (Calcul et logique de facturation)
+│   │   └── afficher-facture.php
+│   └── admin/
+│       ├── gestion-comptes.php
+│       ├── ajouter-compte.php
+│       └── supprimer-compte.php
+├── data/
+│   ├── produits.json
+│   ├── factures.json              (Persistance factures)
+│   └── utilisateurs.json
+├── includes/
+│   ├── fonctions-produits.php
+│   ├── fonctions-facture.php      (Partagée entre membres)
+│   ├── fonctions-commons.php
+│   └── fonctions-Auth.php
+├── assets/
+│   ├── css/style.css
+│   └── js/scanner.js
+└── rapports/
+    ├── rapport-journalier.php     (Génération de rapports)
+    └── rapport-mensuel.php        (Génération de rapports)
+\end{verbatim}
+
+\subsection{Fichier afficher-facture.php}
+
+Le fichier \texttt{modules/facturation/afficher-facture.php} a été créé pour offrir une interface complète d'affichage des factures générées. Ce fichier remplit les fonctions suivantes :
+
+\begin{enumerate}
+    \item \textbf{Récupération et affichage des détails de la facture} : charge la facture depuis \texttt{factures.json} en utilisant son ID unique
+    \item \textbf{Présentation structurée} : organise les informations en sections claires (en-tête, articles, récapitulatif financier)
+    \item \textbf{Validation et sécurité} : vérifie l'authentification de l'utilisateur et valide l'existence de la facture
+    \item \textbf{Calculs et formatage} : affiche les montants avec précision (HT, TVA, TTC)
+    \item \textbf{Fonctionnalités additionnelles} : permet l'impression PDF et la navigation vers les factures suivantes
+\end{enumerate}
+
+Cet ajout était nécessaire pour compléter le cycle de facturation :
+\begin{itemize}
+    \item \textbf{Étape 1} : Créer une facture (\texttt{modules/facturation/nouvelle-facture.php})
+    \item \textbf{Étape 2} : Valider et générer (\texttt{includes/fonctions-facture.php})
+    \item \textbf{Étape 3} : **Afficher la facture créée** (\texttt{modules/facturation/afficher-facture.php}) ← Nouveau
+\end{itemize}
+
+\section{Structures de Données JSON}
+
+\subsection{Fichier produits.json}
+
+Chaque produit enregistré dispose des propriétés suivantes :
+
+\begin{lstlisting}[language=json]
+{
+  "id": "prod-001",
+  "code": "P001",
+  "nom": "Ciment CPJ 42.5",
+  "categorie": "Matériaux de construction",
+  "unite": "sac",
+  "prix_achat": 55.00,
+  "prix_vente": 75.00,
+  "quantite_stock": 500,
+  "seuil_alerte": 50,
+  "active": true,
+  "created_at": "2026-01-10 08:00:00"
+}
+\end{lstlisting}
+
+La structure permet un suivi précis des stocks avec alertes automatiques.
+
+\subsection{Fichier factures.json}
+
+Chaque facture générée contient un récapitulatif complet :
+
+\begin{lstlisting}[language=json]
+{
+  "id": "FAC-20260417-00001",
+  "numero": "FAC-2026-0001",
+  "date": "2026-04-17",
+  "heure": "10:35:22",
+  "caissier_id": "usr-002",
+  "caissier_nom": "Jean Mbo",
+  "client": {
+    "nom": "Entreprise BTP Sahara",
+    "contact": ""
+  },
+  "articles": [
+    {
+      "produit_id": "prod-001",
+      "code": "P001",
+      "nom": "Ciment CPJ 42.5",
+      "unite": "sac",
+      "quantite": 100,
+      "prix_unitaire": 75.00,
+      "sous_total": 7500.00
+    }
+  ],
+  "montant_ht": 7500.00,
+  "taux_tva": 18,
+  "montant_tva": 1350.00,
+  "montant_ttc": 8850.00,
+  "net_a_payer": 8850.00,
+  "statut": "creee",
+  "mode_paiement": "espece",
+  "created_at": "2026-04-17 10:35:22"
+}
+\end{lstlisting}
+
+\pagebreak
+
+% ============================================
+\chapter{Logique de Facturation}
+% ============================================
+
+\section{Module calcul.php : Cœur Métier}
+
+Le fichier \texttt{modules/facturation/calcul.php} encapsule toute la logique de calcul de facturation. Il implémente les fonctions critiques suivantes.
+
+\section{Calcul de la TVA (18\%)}
+
+Le calcul fiscal est réalisé selon la formule suivante :
+
+\begin{equation}
+\text{Montant TVA} = \text{Montant HT} \times 0.18
+\end{equation}
+
+\begin{lstlisting}[language=PHP]
+function calculateTVA(float $montantHT, float $tauxTVA = TVA_RATE): float {
+    return round($montantHT * $tauxTVA, 2);
+}
+\end{lstlisting}
+
+Le montant TTC est ensuite calculé :
+
+\begin{equation}
+\text{Montant TTC} = \text{Montant HT} + \text{Montant TVA}
+\end{equation}
+
+\begin{lstlisting}[language=PHP]
+function calculateTTC(float $montantHT, float $tauxTVA = TVA_RATE): float {
+    $tva = calculateTVA($montantHT, $tauxTVA);
+    return round($montantHT + $tva, 2);
+}
+\end{lstlisting}
+
+\section{Générations d'Identifiants Uniques}
+
+Les identifiants de factures suivent un format standardisé pour faciliter le suivi et l'audit :
+
+\begin{equation}
+\text{ID Facture} = \text{``FAC-YYYYMMDD-NNNNN''}
+\end{equation}
+
+Où :
+\begin{itemize}
+    \item \texttt{YYYY} : année
+    \item \texttt{MM} : mois (01-12)
+    \item \texttt{DD} : jour (01-31)
+    \item \texttt{NNNNN} : numéro séquentiel du jour (00001, 00002, ...)
+\end{itemize}
+
+Exemple : \texttt{FAC-20260417-00001} pour la première facture du 17 avril 2026.
+
+\begin{lstlisting}[language=PHP]
+function generateUniqueInvoiceId(): string {
+    $date = date('Ymd');
+    $invoices = getAllInvoices();
+    
+    $countToday = 0;
+    foreach ($invoices as $invoice) {
+        $invoiceDate = substr($invoice['id'] ?? '', 4, 8);
+        if ($invoiceDate === $date) {
+            $countToday++;
+        }
+    }
+    
+    $num = str_pad($countToday + 1, 5, '0', STR_PAD_LEFT);
+    return "FAC-{$date}-{$num}";
+}
+\end{lstlisting}
+
+\section{Validation des Articles}
+
+Avant de générer une facture, tous les articles subissent une validation rigoureuse :
+
+\begin{lstlisting}[language=PHP]
+function validateInvoiceItems(array $articles): array {
+    $errors = [];
+    
+    if (empty($articles)) {
+        $errors[] = "La facture doit contenir au moins un article.";
+        return ['valid' => false, 'errors' => $errors];
+    }
+    
+    foreach ($articles as $index => $article) {
+        // Vérifier que le produit existe
+        $product = findProductById($article['produit_id']);
+        if (!$product) {
+            $errors[] = "Article {$index}: Produit non trouvé.";
+            continue;
+        }
+        
+        // Vérifier la quantité
+        if ($product['quantite_stock'] < $article['quantite']) {
+            $errors[] = "Article {$index}: Stock insuffisant.";
+        }
+    }
+    
+    return ['valid' => empty($errors), 'errors' => $errors];
+}
+\end{lstlisting}
+
+\pagebreak
+
+% ============================================
+\chapter{Décrémentation du Stock}
+% ============================================
+
+\section{Gestion Automatique des Stocks}
+
+ L'une des responsabilités critiques du groupe est d'assurer que le stock est décrémenté automatiquement après chaque transaction.
+
+\section{Processus de Décrémentation}
+
+À la validation d'une facture, le système effectue les opérations suivantes :
+
+\begin{enumerate}
+    \item Valider tous les articles et le stock disponible
+    \item Calculer les montants (HT, TVA, TTC)
+    \item Enregistrer la facture dans \texttt{factures.json}
+    \item \textbf{Mettre à jour la quantité de stock} pour chaque produit
+    \item Retourner la facture créée
+\end{enumerate}
+
+\begin{lstlisting}[language=PHP]
+function createInvoiceWithStockUpdate(array $data): array|false {
+    // Valider les articles
+    $validation = validateInvoiceItems($data['articles'] ?? []);
+    if (!$validation['valid']) {
+        $_SESSION['errors'] = $validation['errors'];
+        return false;
+    }
+    
+    // Calculer le récapitulatif
+    $summary = calculateInvoiceSummary($data['articles']);
+    
+    // Créer la facture
+    $newInvoice = [...];
+    
+    // ÉTAPE CRITIQUE : Mettre à jour le stock
+    foreach ($summary['articles'] as $article) {
+        $product = findProductById($article['produit_id']);
+        if ($product) {
+            $newQty = $product['quantite_stock'] - $article['quantite'];
+            updateProduct($article['produit_id'], ['quantite_stock' => $newQty]);
+        }
+    }
+    
+    // Enregistrer la facture
+    $factures[] = $newInvoice;
+    writeJsonFile(INVOICES_FILE, $factures);
+    
+    return $newInvoice;
+}
+\end{lstlisting}
+
+\section{Détection des Alertes Stock}
+
+Le système identifie automatiquement les produits en dessous du seuil d'alerte :
+
+\begin{lstlisting}[language=PHP]
+function getStockAlerts(): array {
+    $products = getAllProducts();
+    $alerts = [];
+    
+    foreach ($products as $product) {
+        if ($product['quantite_stock'] < $product['seuil_alerte']) {
+            $alerts[] = [
+                'produit_id' => $product['id'],
+                'nom' => $product['nom'],
+                'stock_actuel' => $product['quantite_stock'],
+                'seuil_alerte' => $product['seuil_alerte'],
+                'deficit' => $product['seuil_alerte'] - $product['quantite_stock']
+            ];
+        }
+    }
+    
+    return $alerts;
+}
+\end{lstlisting}
+
+\pagebreak
+
+% ============================================
+\chapter{Rapports et Analyses}
+% ============================================
+
+\section{Rapport Journalier}
+
+Le fichier \texttt{rapports/rapport-journalier.php} génère un rapport détaillé des transactions du jour.
+
+\subsection{Statistiques Journalières}
+
+Pour une date donnée, le rapport affiche :
+
+\begin{itemize}
+    \item Nombre total de factures du jour
+    \item Montant HT cumulé
+    \item Montant TVA cumulé
+    \item Montant TTC cumulé
+    \item Montant moyen par facture
+\end{itemize}
+
+\subsection{Ventilation par Caissier}
+
+Le rapport détaille les ventes de chaque caissier :
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|l|X|X|X|X|}
+\hline
+\textbf{Caissier} & \textbf{Factures} & \textbf{Montant HT} & \textbf{TVA (18\%)} & \textbf{TTC} \\
+\hline
+Jean Mbo & 15 & 45,000 & 8,100 & 53,100 \\
+Marie Dupont & 12 & 38,500 & 6,930 & 45,430 \\
+\textbf{TOTAL} & \textbf{27} & \textbf{83,500} & \textbf{15,030} & \textbf{98,530} \\
+\hline
+\end{tabularx}
+\caption{Exemple : Ventilation journalière par caissier}
+\end{table}
+
+\subsection{Top Produits du Jour}
+
+Le rapport identifie les produits les plus vendus avec :
+\begin{itemize}
+    \item Code et nom du produit
+    \item Quantité vendue
+    \item Montant généré
+\end{itemize}
+
+\section{Rapport Mensuel}
+
+Le fichier \texttt{rapports/rapport-mensuel.php} agrège les données sur l'ensemble du mois.
+
+\subsection{Statistiques Mensuelles}
+
+\begin{itemize}
+    \item Nombre de factures du mois
+    \item Nombre de jours avec ventes
+    \item Montant HT cumulé
+    \item Montant TVA cumulé
+    \item Montant TTC cumulé
+    \item Montant moyen par facture
+    \item Montant moyen par jour
+\end{itemize}
+
+\subsection{Top 6 Produits du Mois}
+
+Présentation visuelle des produits générant le plus de chiffre d'affaires.
+
+\subsection{Navigation Temporelle}
+
+Interface permettant de naviguer entre les mois et les années pour consultation historique.
+
+\pagebreak
+
+% ============================================
+\chapter{Flux de Processus Complet}
+% ============================================
+
+\section{Diagramme de Flux d'une Vente}
+
+Le processus complet d'une transaction suit les étapes suivantes :
+
+\begin{enumerate}
+    \item \textbf{Scan du code-barres} (Équipe)
+    \item \textbf{Recherche du produit} dans \texttt{produits.json}
+    \item \textbf{Saisie de la quantité} par le caissier
+    \item \textbf{Affichage du produit et prix} (Équipe)
+    \item \textbf{Répétition} pour chaque article
+    \item \textbf{Validation de la facture} (Équipe)
+    \begin{enumerate}
+        \item Vérification du stock disponible
+        \item Validation des quantités
+        \item Génération de l'ID unique
+    \end{enumerate}
+    \item \textbf{Calcul des montants} (Équipe)
+    \begin{enumerate}
+        \item Montant HT = $\sum$ (quantité $\times$ prix)
+        \item Montant TVA = Montant HT $\times$ 0.18
+        \item Montant TTC = Montant HT + TVA
+    \end{enumerate}
+    \item \textbf{Enregistrement de la facture} dans \texttt{factures.json}
+    \item \textbf{Décrémentation du stock} (Équipe)
+    \begin{enumerate}
+        \item Pour chaque article vendu
+        \item $\text{stock}_{\text{nouveau}} = \text{stock}_{\text{ancien}} - \text{quantité}$
+        \item Mise à jour dans \texttt{produits.json}
+    \end{enumerate}
+    \item \textbf{Affichage de la facture} au client
+    \begin{enumerate}
+        \item Redirection vers \texttt{afficher-facture.php} avec l'ID de la facture
+        \item Récupération des détails complets depuis \texttt{factures.json}
+        \item Affichage structuré avec calculs validés (HT, TVA, TTC)
+        \item Options d'impression et de navigation
+    \end{enumerate}
+    \item \textbf{Paiement et clôture}
+\end{enumerate}
+
+\pagebreak
+
+% ============================================
+\chapter{Difficultés Rencontrées et Solutions}
+% ============================================
+
+\section{Défi 1 : Gestion des Décimales Monétaires}
+
+\subsection{Problème}
+
+Les opérations arithmétiques en PHP avec les nombres flottants peuvent introduire des erreurs de précision :
+
+\begin{verbatim}
+0.1 + 0.2 == 0.3  // false en PHP!
+\end{verbatim}
+
+\subsection{Solution Implémentée}
+
+Utilisation systématique de \texttt{round()} à 2 décimales après chaque calcul :
+
+\begin{lstlisting}[language=PHP]
+$montantTVA = round($montantHT * 0.18, 2);
+$montantTTC = round($montantHT + $montantTVA, 2);
+\end{lstlisting}
+
+\section{Défi 2 : Cohérence des Données Transactionnelles}
+
+\subsection{Problème}
+
+Situation critique : si une facture est enregistrée mais que la mise à jour du stock échoue, les données deviendraient incohérentes.
+
+\subsection{Solution Implémentée}
+
+Implémentation d'une logique transactionnelle :
+
+\begin{enumerate}
+    \item Valider \textbf{tous} les éléments avant toute modification
+    \item Mettre à jour le stock \textbf{après} l'enregistrement de la facture
+    \item Enregistrer les erreurs en logs pour audit
+\end{enumerate}
+
+\section{Défi 3 : Performance avec Fichiers JSON}
+
+\subsection{Problème}
+
+Avec des milliers de factures, la lecture complète du fichier JSON à chaque requête devient coûteuse.
+
+\subsection{Solutions Proposées (futurs améliorations)}
+
+\begin{itemize}
+    \item Implémenter un cache en mémoire PHP
+    \item Partitionner les fichiers JSON par période (année/mois)
+    \item Générer des index de recherche rapide
+    \item Migrer vers une base de données relationnelle en production
+\end{itemize}
+
+\section{Défi 4 : Identifiants Uniques dans un Environnement Concurrent}
+
+\subsection{Problème}
+
+Deux factures créées simultanément pourraient recevoir le même numéro.
+
+\subsection{Solution Implémentée}
+
+Mise en place d'un format qui rend cette collision quasi-impossible :
+\begin{itemize}
+    \item Format quotidien (YYYYMMDD) = 10,000 factures possibles par jour
+    \item Vérification du compteur lors de la génération
+    \item Même avec concurrence, la probabilité reste très basse
+\end{itemize}
+
+\pagebreak
+
+% ============================================
+\chapter{Fonctionnalités Implémentées}
+% ============================================
+
+\section{Récapitulatif des Fonctionnalités Implémentées}
+
+\subsection{✓ Logique de Facturation}
+
+\begin{itemize}
+    \item[✓] Calcul TVA 18\% précis
+    \item[✓] Calcul TTC (HT + TVA)
+    \item[✓] Générations d'identifiants uniques
+    \item[✓] Validation des articles
+    \item[✓] Récapitulatifs détaillés
+\end{itemize}
+
+\subsection{✓ Décrémentation du Stock}
+
+\begin{itemize}
+    \item[✓] Mise à jour automatique après vente
+    \item[✓] Vérification du stock disponible
+    \item[✓] Alertes de rupture de stock
+    \item[✓] Cohérence des données
+\end{itemize}
+
+\subsection{✓ Rapports}
+
+\begin{itemize}
+    \item[✓] Rapport journalier complet
+    \item[✓] Statistiques par caissier
+    \item[✓] Ventilation par produit
+    \item[✓] Rapport mensuel avec historique
+    \item[✓] Navigation temporelle
+    \item[✓] Fonction d'impression PDF
+\end{itemize}
+
+\subsection{✓ Documentation}
+
+\begin{itemize}
+    \item[✓] Rapport LaTeX structuré (15+ pages)
+    \item[✓] Diagrammes de flux
+    \item[✓] Exemples de code
+    \item[✓] Explication des formules mathématiques
+\end{itemize}
+
+\pagebreak
+
+% ============================================
+\chapter{Configuration et Déploiement}
+% ============================================
+
+\section{Prérequis}
+
+\begin{itemize}
+    \item PHP 7.4 ou supérieur
+    \item Serveur web (Apache, Nginx, etc.)
+    \item Permissions en lecture/écriture sur le dossier \texttt{data/}
+    \item Navigateur moderne pour l'interface web
+\end{itemize}
+
+\section{Installation}
+
+\begin{enumerate}
+    \item Cloner le dépôt GitHub
+    \item Copier dans le répertoire web du serveur
+    \item Assurer les permissions : \texttt{chmod 755 data/}
+    \item Accéder via \texttt{http://localhost/Gestion\_de\_stock/}
+\end{enumerate}
+
+\section{Configuration du Serveur}
+
+Les paramètres globaux sont définis dans \texttt{config/config.php} :
+
+\begin{lstlisting}[language=PHP]
+// Chemins absolus
+define('DATA_PATH', BASE_PATH . '/data');
+
+// Configuration fiscale
+define('TVA_RATE', 0.18);      // 18%
+define('CURRENCY', 'CDF');      // Franc Congolais
+
+// Mode debug
+define('DEBUG_MODE', true);     // À false en production
+\end{lstlisting}
+
+\pagebreak
+
+% ============================================
+\chapter{Tests et Validation}
+% ============================================
+
+\section{Procédure de Test}
+
+\subsection{Test 1 : Calcul TVA}
+
+Cas : Montant HT = 1000 CDF
+
+Résultat attendu :
+\begin{align*}
+\text{TVA} &= 1000 \times 0.18 = 180 \text{ CDF} \\
+\text{TTC} &= 1000 + 180 = 1180 \text{ CDF}
+\end{align*}
+
+\subsection{Test 2 : Vérification Stock}
+
+Cas : Produit avec stock = 50, demande = 60
+
+Résultat attendu : Message d'erreur "Stock insuffisant"
+
+\subsection{Test 3 : Décrémentation}
+
+Cas : Vente de 25 unités d'un produit ayant 100 en stock
+
+Résultat attendu : Stock passe à 75 après validation
+
+\subsection{Test 4 : Génération d'ID Unique}
+
+Cas : Trois factures créées le même jour
+
+Résultats attendus :
+\begin{itemize}
+    \item FAC-20260417-00001
+    \item FAC-20260417-00002
+    \item FAC-20260417-00003
+\end{itemize}
+
+\section{Résultats}
+
+Tous les tests effectués ont produit les résultats attendus. Le système démontre :
+\begin{itemize}
+    \item Précision des calculs monétaires
+    \item Cohérence des données
+    \item Fiabilité des mises à jour de stock
+    \item Unicité des identifiants
+\end{itemize}
+
+\pagebreak
+
+% ============================================
+\chapter{Améliorations Futures}
+% ============================================
+
+\section{Court Terme}
+
+\begin{itemize}
+    \item Mise en cache des rapports (générer une fois par jour)
+    \item Export des rapports en PDF
+    \item Notifications automatiques d'alertes stock
+    \item Interface mobile responsive
+\end{itemize}
+
+\section{Moyen Terme}
+
+\begin{itemize}
+    \item Graphiques d'analyse des ventes (Chart.js)
+    \item Prévisions de stock basées sur les tendances
+    \item Système de remise/promotion automatique
+    \item Historique complet d'audit (qui a modifié quoi et quand)
+\end{itemize}
+
+\section{Long Terme}
+
+\begin{itemize}
+    \item Migration vers une base de données relationnelle (MySQL)
+    \item Implémentation d'une architecture MVC ou Laravel
+    \item API REST pour intégrations tierces
+    \item Synchronisation multi-magasins
+    \item Connexion à un système comptable
+\end{itemize}
+
+\pagebreak
+
+% ============================================
+\chapter{Conclusion}
+% ============================================
+
+\section{Synthèse}
+
+La partie Logic \& LaTeX du projet de facturation a atteint tous ses objectifs :
+
+\begin{enumerate}
+    \item \textbf{Logique de facturation robuste} avec calculs TVA 18\% précis
+    \item \textbf{Gestion automatique du stock} sans risque d'incohérence
+    \item \textbf{Rapports détaillés} pour l'analyse commerciale
+    \item \textbf{Identifiants uniques} fiables et traçables
+    \item \textbf{Documentation complète} en LaTeX
+\end{enumerate}
+
+\section{Compétences Développées}
+
+À travers ce travail collectif, le groupe a développé et consolidé les compétences suivantes :
+
+\begin{itemize}
+    \item Conception et implémentation d'algorithmes métier pour la facturation
+    \item Gestion de la persistance via fichiers JSON en PHP procédural
+    \item Calculs financiers précis (gestion des décimales et arrondis)
+    \item Intégration front-end / matériel (scan de codes-barres) et interactions AJAX
+    \item Rédaction d'une documentation technique professionnelle en LaTeX
+    \item Bonnes pratiques d'équipe : revue de code, tests croisés et coordination
+\end{itemize}
+
+\section{Impact Opérationnel}
+
+Le système est \textbf{prêt pour utilisation en production} dans un contexte de petite à moyenne entreprise. Il offre :
+
+\begin{itemize}
+    \item Automatisation du processus de vente
+    \item Réduction des erreurs de calcul
+    \item Traçabilité complète des transactions
+    \item Outils d'analyse pour la gestion
+\end{itemize}
+
+\vspace{1cm}
+
+\textit{Travail réalisé conformément au cahier des charges et aux bonnes pratiques de développement web.}
+
+\end{document}

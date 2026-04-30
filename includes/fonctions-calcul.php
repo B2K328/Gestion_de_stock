@@ -1,30 +1,16 @@
 <?php
 /**
- * Module de Calcul et Facturation
+ * Fonctions de Calcul et Facturation
  * Gestion de Stock - Transco
  * 
- * Responsabilités :
- * - Calcul des montants TVA (18%)
- * - Gestion des identifiants uniques de factures
- * - Décrémentation du stock
- * - Génération des récapitulatifs
+ * Ce fichier contient UNIQUEMENT les fonctions réutilisables
+ * sans contrôle d'accès. À inclure dans d'autres fichiers.
  */
 
-require_once __DIR__ . '/../../config/config.php';
-require_once __DIR__ . '/../../includes/fonctions-commons.php';
-require_once __DIR__ . '/../../includes/fonctions-produits.php';
-require_once __DIR__ . '/../../includes/fonctions-facture.php';
-require_once __DIR__ . '/../../auth/session.php';
-
-// Vérifier l'authentification
-requireAuth();
-
-// Seuls les rôles Manager et Super Administrateur peuvent accéder
-$allowedRoles = ['manager', 'super_admin'];
-if (!in_array(getUserRole(), $allowedRoles)) {
-    setFlashMessage('error', 'Accès refusé. Seuls les Managers et Super Administrateurs peuvent accéder au calcul de facturation.');
-    redirectTo('index.php');
-}
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/fonctions-commons.php';
+require_once __DIR__ . '/fonctions-produits.php';
+require_once __DIR__ . '/fonctions-facture.php';
 
 /**
  * Calculer le montant TVA pour une facture
@@ -53,8 +39,17 @@ function calculateTTC(float $montantHT, float $tauxTVA = TVA_RATE): float {
  * @return string Identifiant unique
  */
 function generateUniqueInvoiceId(): string {
+    static $lastDate = null;
+    static $dayCounter = 0;
+    
     $date = date('Ymd');
     $invoices = getAllInvoices();
+    
+    // Réinitialiser le compteur si c'est un nouveau jour
+    if ($lastDate !== $date) {
+        $lastDate = $date;
+        $dayCounter = 0;
+    }
     
     // Compter les factures du jour
     $countToday = 0;
@@ -65,7 +60,10 @@ function generateUniqueInvoiceId(): string {
         }
     }
     
-    $num = str_pad($countToday + 1, 5, '0', STR_PAD_LEFT);
+    // Utiliser le max entre le compteur statique et le compteur du fichier
+    $dayCounter = max($dayCounter + 1, $countToday + 1);
+    
+    $num = str_pad($dayCounter, 5, '0', STR_PAD_LEFT);
     return "FAC-{$date}-{$num}";
 }
 
@@ -167,7 +165,9 @@ function createInvoiceWithStockUpdate(array $data): array|false {
     // Valider les articles
     $validation = validateInvoiceItems($data['articles'] ?? []);
     if (!$validation['valid']) {
-        $_SESSION['errors'] = $validation['errors'];
+        if (isset($_SESSION)) {
+            $_SESSION['errors'] = $validation['errors'];
+        }
         return false;
     }
     
@@ -238,62 +238,5 @@ function getStockAlerts(): array {
     }
     
     return $alerts;
-}
-
-// Traitement des requêtes AJAX pour calcul en temps réel
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
-    header('Content-Type: application/json');
-    
-    $action = sanitizeInput($_GET['action']);
-    
-    switch ($action) {
-        case 'calculate_summary':
-            $articles = $_POST['articles'] ?? [];
-            $validation = validateInvoiceItems($articles);
-            
-            if (!$validation['valid']) {
-                echo json_encode([
-                    'success' => false,
-                    'errors' => $validation['errors']
-                ]);
-            } else {
-                $summary = calculateInvoiceSummary($articles);
-                echo json_encode([
-                    'success' => true,
-                    'data' => $summary
-                ]);
-            }
-            exit;
-            
-        case 'check_stock':
-            $productId = sanitizeInput($_POST['produit_id'] ?? '');
-            $quantite = (int)($_POST['quantite'] ?? 0);
-            
-            $product = findProductById($productId);
-            if (!$product) {
-                echo json_encode([
-                    'success' => false,
-                    'message' => 'Produit non trouvé'
-                ]);
-            } else {
-                $available = $product['quantite_stock'] >= $quantite;
-                echo json_encode([
-                    'success' => true,
-                    'available' => $available,
-                    'stock' => $product['quantite_stock'],
-                    'requested' => $quantite
-                ]);
-            }
-            exit;
-            
-        case 'get_alerts':
-            $alerts = getStockAlerts();
-            echo json_encode([
-                'success' => true,
-                'alerts' => $alerts,
-                'count' => count($alerts)
-            ]);
-            exit;
-    }
 }
 ?>
