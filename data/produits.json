@@ -1,4 +1,5 @@
 [
+<<<<<<< HEAD
   {
     "id": "prod-001",
     "code": "P001",
@@ -64,4 +65,71 @@
     "active": true,
     "created_at": "2026-02-01 11:00:00"
   }
+=======
+    {
+        "id": "prod-001",
+        "code": "P001",
+        "nom": "Ciment CPJ 42.5",
+        "categorie": "Matériaux de construction",
+        "unite": "sac",
+        "prix_achat": 55,
+        "prix_vente": 75,
+        "quantite_stock": 500,
+        "seuil_alerte": 50,
+        "active": true,
+        "created_at": "2026-01-10 08:00:00"
+    },
+    {
+        "id": "prod-002",
+        "code": "P002",
+        "nom": "Sable fin",
+        "categorie": "Matériaux de construction",
+        "unite": "m3",
+        "prix_achat": 120,
+        "prix_vente": 180,
+        "quantite_stock": 144,
+        "seuil_alerte": 20,
+        "active": true,
+        "created_at": "2026-01-10 08:30:00"
+    },
+    {
+        "id": "prod-003",
+        "code": "P003",
+        "nom": "Gravier 5\/15",
+        "categorie": "Matériaux de construction",
+        "unite": "m3",
+        "prix_achat": 150,
+        "prix_vente": 220,
+        "quantite_stock": 200,
+        "seuil_alerte": 30,
+        "active": true,
+        "created_at": "2026-01-12 09:00:00"
+    },
+    {
+        "id": "prod-004",
+        "code": "P004",
+        "nom": "Fer à béton 12mm",
+        "categorie": "Acier",
+        "unite": "barre",
+        "prix_achat": 85,
+        "prix_vente": 120,
+        "quantite_stock": 1000,
+        "seuil_alerte": 100,
+        "active": true,
+        "created_at": "2026-01-15 10:00:00"
+    },
+    {
+        "id": "prod-005",
+        "code": "P005",
+        "nom": "Briques creuses",
+        "categorie": "Matériaux de construction",
+        "unite": "piece",
+        "prix_achat": 2.5,
+        "prix_vente": 4,
+        "quantite_stock": 10000,
+        "seuil_alerte": 1000,
+        "active": true,
+        "created_at": "2026-02-01 11:00:00"
+    }
+>>>>>>> Gestion_SP
 ]

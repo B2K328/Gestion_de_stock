@@ -5,6 +5,24 @@
  */
 
 /**
+<<<<<<< HEAD
+=======
+ * Générer une URL complète
+ * @param string $path Chemin relatif
+ * @return string URL complète
+ */
+function url(string $path): string {
+    if (str_starts_with($path, 'http')) {
+        return $path;
+    }
+    if (!str_starts_with($path, '/')) {
+        $path = '/' . $path;
+    }
+    return BASE_URL . $path;
+}
+
+/**
+>>>>>>> Gestion_SP
  * Lire un fichier JSON
  * @param string $filePath Chemin du fichier
  * @return array|null
@@ -50,7 +68,11 @@ function formatDate(?string $date = null): string {
 
 /**
  * Sanitiser une entrée utilisateur
+<<<<<<< HEAD
  * @param mixed $input 
+=======
+ * @param mixed $input
+>>>>>>> Gestion_SP
  * @return mixed
  */
 function sanitizeInput($input) {
@@ -90,6 +112,14 @@ function isAdmin(): bool {
  * @return void
  */
 function redirectTo(string $url): void {
+<<<<<<< HEAD
+=======
+    if (str_starts_with($url, '/')) {
+        $url = BASE_URL . $url;
+    } elseif (!str_starts_with($url, 'http')) {
+        $url = BASE_URL . '/' . $url;
+    }
+>>>>>>> Gestion_SP
     header("Location: $url");
     exit;
 }
@@ -116,4 +146,34 @@ function getFlashMessage(string $type): ?string {
         return $msg;
     }
     return null;
+<<<<<<< HEAD
+=======
+}
+
+/**
+ * Valider le format de date MM-JJ-AAAA
+ * @param string $date
+ * @return bool
+ */
+function validDate(string $date): bool {
+    $pattern = '/^\d{2}-\d{2}-\d{4}$/';
+    if (!preg_match($pattern, $date)) {
+        return false;
+    }
+    list($month, $day, $year) = explode('-', $date);
+    return checkdate((int)$month, (int)$day, (int)$year);
+}
+
+/**
+ * Convertir date MM-JJ-AAAA en AAAA-MM-JJ
+ * @param string $date Format MM-JJ-AAAA
+ * @return string Format AAAA-MM-JJ
+ */
+function convertDateToISO(string $date): string {
+    if (!validDate($date)) {
+        return '';
+    }
+    list($month, $day, $year) = explode('-', $date);
+    return sprintf('%04d-%02d-%02d', (int)$year, (int)$month, (int)$day);
+>>>>>>> Gestion_SP
 }

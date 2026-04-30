@@ -1,0 +1,39 @@
+# OS Files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# PHP
+*.log
+php_errors.log
+
+# Node/NPM (si utilisé)
+node_modules/
+npm-debug.log
+
+# Composer (si utilisé)
+vendor/
+composer.lock
+
+# Session/Temp
+session/
+tmp/
+temp/
+*.tmp
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dépôt Git
+.git/
+.gitkeep

@@ -194,4 +194,42 @@ function authenticate(string $email, string $password) {
     
     unset($user['password']);
     return $user;
+<<<<<<< HEAD
+=======
+}
+
+/**
+ * Vérifier si c'est un utilisateur invité (non connecté)
+ * @return bool
+ */
+function isGuest(): bool {
+    return !isLoggedIn();
+}
+
+/**
+ * Protéger une page (auth requise)
+ * @param array $roles Rôles autorisés (vide = tous connectés)
+ * @return void
+ */
+function requireAuth(array $roles = []): void {
+    if (!isLoggedIn()) {
+        setFlashMessage('error', 'Connexion requise');
+        redirectTo('auth/login.php');
+    }
+    
+    if (!empty($roles) && !in_array(getUserRole(), $roles)) {
+        setFlashMessage('error', 'Accès non autorisé');
+        redirectTo('index.php');
+    }
+}
+
+/**
+ * Protéger une page (invité requis)
+ * @return void
+ */
+function requireGuest(): void {
+    if (isLoggedIn()) {
+        redirectTo('index.php');
+    }
+>>>>>>> Gestion_SP
 }

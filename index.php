@@ -13,6 +13,7 @@ require_once __DIR__ . '/auth/session.php';
 requireAuth();
 
 $pageTitle = 'Tableau de Bord - Gestion de Stock';
+<<<<<<< HEAD
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -47,10 +48,15 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
         .alert-success { background: #d4edda; color: #155724; }
     </style>
 </head>
+=======
+include __DIR__ . '/includes/header.php';
+?>
+>>>>>>> Gestion_SP
 <body>
     <nav class="navbar">
         <div class="navbar-brand">📦 Gestion de Stock</div>
         <div class="navbar-menu">
+<<<<<<< HEAD
             <a href="/index.php">Accueil</a>
             <a href="/modules/produits/liste.php">Produits</a>
             <a href="/modules/facturation/nouvelle-facture.php">Nouvelle Facture</a>
@@ -59,6 +65,16 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
             <?php endif; ?>
             <span>| <?= $_SESSION['user_name'] ?? '' ?> (<?= getUserRole() ?>)</span>
             <a href="auth/logout.php">Déconnexion</a>
+=======
+            <a href="<?= url('/index.php') ?>">Accueil</a>
+            <a href="<?= url('/modules/produits/liste.php') ?>">Produits</a>
+            <a href="<?= url('/modules/facturation/nouvelle-facture.php') ?>">Nouvelle Facture</a>
+            <?php if (isAdmin()): ?>
+            <a href="<?= url('/modules/admin/gestion-compte.php') ?>">Comptes</a>
+            <?php endif; ?>
+            <span>| <?= $_SESSION['user_name'] ?? '' ?> (<?= getUserRole() ?>)</span>
+            <a href="<?= url('/auth/logout.php') ?>">Déconnexion</a>
+>>>>>>> Gestion_SP
         </div>
     </nav>
     <div class="container">
@@ -68,7 +84,11 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
         <div class="stats">
             <div class="stat-card">
                 <h3>📊 Total Ventes</h3>
+<<<<<<< HEAD
                 <div class="value">38 880 FC</div>
+=======
+                <div class="value">38 880 DH</div>
+>>>>>>> Gestion_SP
             </div>
             <div class="stat-card">
                 <h3>🧾 Factures</h3>
@@ -101,21 +121,33 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
                         <td>FAC-2026-0003</td>
                         <td>BTP Atlas</td>
                         <td>25/04/2026</td>
+<<<<<<< HEAD
                         <td>9 600 FC</td>
+=======
+                        <td>9 600 DH</td>
+>>>>>>> Gestion_SP
                         <td><span style="color: #27ae60;">Payée</span></td>
                     </tr>
                     <tr>
                         <td>FAC-2026-0002</td>
                         <td>Construction Moderne</td>
                         <td>20/04/2026</td>
+<<<<<<< HEAD
                         <td>13 080 FC</td>
+=======
+                        <td>13 080 DH</td>
+>>>>>>> Gestion_SP
                         <td><span style="color: #f39c12;">En attente</span></td>
                     </tr>
                     <tr>
                         <td>FAC-2026-0001</td>
                         <td>Entreprise BTP Sahara</td>
                         <td>15/04/2026</td>
+<<<<<<< HEAD
                         <td>16 200 FC</td>
+=======
+                        <td>16 200 DH</td>
+>>>>>>> Gestion_SP
                         <td><span style="color: #27ae60;">Payée</span></td>
                     </tr>
                 </tbody>
@@ -128,4 +160,9 @@ $pageTitle = 'Tableau de Bord - Gestion de Stock';
         </div>
     </div>
 </body>
+<<<<<<< HEAD
 </html>
+=======
+</html>
+<?php include __DIR__ . '/includes/footer.php'; ?>
+>>>>>>> Gestion_SP

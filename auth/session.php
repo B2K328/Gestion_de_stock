@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../includes/fonctions-commons.php';
+<<<<<<< HEAD
 
 /**
  * Vérifier et protéger l'accès aux pages
@@ -33,6 +34,9 @@ function requireGuest(): void {
         redirectTo('/index.php');
     }
 }
+=======
+require_once __DIR__ . '/../includes/fonctions-Auth.php';
+>>>>>>> Gestion_SP
 
 /**
  * Vérifier l'expiration de la session
@@ -45,9 +49,14 @@ function checkSessionTimeout(int $timeout = 1800): void {
         if ($elapsed > $timeout) {
             logoutUser();
             setFlashMessage('error', 'Votre session a expiré. Veuillez vous reconnecter.');
+<<<<<<< HEAD
             redirectTo('/auth/login.php');
         }
         // Rafraîchir le temps de session
+=======
+            redirectTo('auth/login.php');
+        }
+>>>>>>> Gestion_SP
         $_SESSION['login_time'] = time();
     }
 }

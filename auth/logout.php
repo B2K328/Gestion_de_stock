@@ -12,4 +12,8 @@ require_once __DIR__ . '/../includes/fonctions-Auth.php';
 logoutUser();
 
 setFlashMessage('success', 'Vous avez été déconnecté avec succès.');
+<<<<<<< HEAD
 redirectTo('login.php');
+=======
+redirectTo('auth/login.php');
+>>>>>>> Gestion_SP

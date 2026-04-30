@@ -3,8 +3,13 @@
     "id": "usr-001",
     "email": "admin@transco.ma",
     "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+<<<<<<< HEAD
     "nom": "07",
     "prenom": "DASH",
+=======
+    "nom": "Admin",
+    "prenom": "Système",
+>>>>>>> Gestion_SP
     "role": "admin",
     "active": true,
     "created_at": "2026-01-01 00:00:00"
@@ -13,8 +18,13 @@
     "id": "usr-002",
     "email": "vendeur@transco.ma",
     "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+<<<<<<< HEAD
     "nom": "NGUNZ",
     "prenom": "ANDY",
+=======
+    "nom": "Dupont",
+    "prenom": "Jean",
+>>>>>>> Gestion_SP
     "role": "vendeur",
     "active": true,
     "created_at": "2026-01-15 10:30:00"
@@ -23,8 +33,13 @@
     "id": "usr-003",
     "email": "magasinier@transco.ma",
     "password": "$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi",
+<<<<<<< HEAD
     "nom": "BDK",
     "prenom": "babe To me",
+=======
+    "nom": "Martin",
+    "prenom": "Sophie",
+>>>>>>> Gestion_SP
     "role": "magasinier",
     "active": true,
     "created_at": "2026-02-01 14:00:00"
